@@ -1,0 +1,33 @@
+name: Generar Pantalla E-Paper Automática
+
+on:
+  schedule:
+    - cron: '0 4 * * *' # Se ejecuta diariamente a las 04:00 UTC
+  workflow_dispatch: # <-- ESTA LÍNEA PERMITE EL BOTÓN MANUAL
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Instalar dependencias
+        run: |
+          pip install pandas pillow requests
+
+      - name: Generar la imagen BMP
+        run: |
+          python generar_pantalla.py
+
+      - name: Publicar imagen en GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: gh-pages
